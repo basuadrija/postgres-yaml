@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresdb-learn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresdb-learn
+  template:
+    metadata:
+      labels:
+        app: postgresdb-learn
+    spec:
+      containers:
+        - name: postgresdb-learn
+          image: postgres
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: db-secret-credentials
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-volume
+      volumes:
+        - name: postgres-volume
+          hostPath:
+            path: /var/storage
