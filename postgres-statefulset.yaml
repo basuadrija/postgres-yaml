@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresdb-stateful
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: postgresdb-stateful
+  template:
+    metadata:
+      labels:
+        app: postgresdb-stateful
+    spec:
+      containers:
+        - name: postgresdb-learn
+          image: postgres
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: db-secret-credentials
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-volume
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-volume
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: demo-storage
+        resources:
+          requests:
+            storage: 1Gi
